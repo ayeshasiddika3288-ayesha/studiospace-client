@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import GoogleButton from "@/components/GoogleButton";
 
 const validatePassword = (password: string) => {
   if (!/[A-Z]/.test(password)) return "Password must have an uppercase letter";
@@ -85,6 +86,8 @@ export default function RegisterPage() {
           <button type="submit" disabled={loading} className="btn btn-primary mt-2">
             {loading ? <span className="loading loading-spinner"></span> : "Register"}
           </button>
+
+          <GoogleButton />
 
           <p className="text-center text-sm">
             Already have an account?{" "}
