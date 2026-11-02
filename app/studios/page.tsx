@@ -3,6 +3,8 @@ import StudioCard from "@/components/StudioCard";
 import { categories } from "@/lib/constants";
 import type { Studio } from "@/lib/types";
 
+export const instant = false;
+
 type SearchParams = { category?: string; search?: string; sort?: string };
 
 async function getStudios(query: URLSearchParams): Promise<Studio[]> {
