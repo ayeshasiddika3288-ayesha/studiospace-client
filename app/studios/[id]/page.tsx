@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { FaStar } from "react-icons/fa";
 import { FiMapPin, FiUsers, FiShield, FiCheck } from "react-icons/fi";
 import type { Studio } from "@/lib/types";
+import BookingModal from "@/components/BookingModal";
 
 async function getStudio(id: string): Promise<Studio | null> {
   try {
@@ -97,7 +98,7 @@ export default async function StudioDetailsPage({
               <p className="text-sm opacity-70">{studio.ownerEmail}</p>
             </div>
 
-            <button className="btn btn-primary mt-2">Book Workspace Now</button>
+            <BookingModal studio={studio} />
           </div>
         </div>
       </aside>
