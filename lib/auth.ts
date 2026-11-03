@@ -23,4 +23,11 @@ export const auth = betterAuth({
       "https://studiospace-client-navy.vercel.app/api/auth/callback/google",
   },
 },
+
+ account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google"],
+    },
+  },
 });
