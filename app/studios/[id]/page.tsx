@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { FaStar } from "react-icons/fa";
 import { FiMapPin, FiUsers, FiShield, FiCheck } from "react-icons/fi";
-import type { Studio } from "@/lib/types";
 import BookingModal from "@/components/BookingModal";
+import StudioGallery from "@/components/StudioGallery";
+import type { Studio } from "@/lib/types";
 
 async function getStudio(id: string): Promise<Studio | null> {
   try {
@@ -25,15 +26,12 @@ export default async function StudioDetailsPage({
   const studio = await getStudio(id);
   if (!studio) notFound();
 
+  const images = [studio.image, ...(studio.gallery ?? [])].filter(Boolean);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 grid gap-8 lg:grid-cols-3">
       <div className="lg:col-span-2 space-y-6">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={studio.image}
-          alt={studio.title}
-          className="w-full h-72 sm:h-96 object-cover rounded-box"
-        />
+        <StudioGallery images={images} title={studio.title} />
 
         <div>
           <span className="badge badge-primary mb-2">{studio.category}</span>
