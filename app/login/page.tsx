@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import GoogleButton from "@/components/GoogleButton";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -64,6 +65,8 @@ export default function LoginPage() {
           <button type="submit" disabled={loading} className="btn btn-primary">
             {loading ? <span className="loading loading-spinner"></span> : "Login"}
           </button>
+
+          <GoogleButton />
 
           <p className="text-center text-sm">
             New to StudioSpace?{" "}
