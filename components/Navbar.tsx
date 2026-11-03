@@ -140,12 +140,15 @@ export default function Navbar() {
                 role="button"
                 className="btn btn-ghost btn-circle avatar"
               >
-                <div className="w-10 rounded-full ring ring-primary ring-offset-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={user.image || "https://i.ibb.co/2kR5zq0/user.png"}
-                    alt={user.name}
-                  />
+                <div className="w-10 rounded-full ring ring-primary ring-offset-2 bg-primary text-primary-content flex items-center justify-center">
+                  {user.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={user.image} alt={user.name} />
+                  ) : (
+                    <span className="text-lg font-bold">
+                      {user.name?.charAt(0).toUpperCase()}
+                    </span>
+                  )}
                 </div>
               </div>
               <ul
@@ -155,7 +158,7 @@ export default function Navbar() {
                 <li className="menu-title text-base">
                   {user.name}
                   <span className="block text-xs font-normal normal-case opacity-70">
-                  {user.email}
+                    {user.email}
                   </span>
                 </li>
                 {userLinks.map((link) => (

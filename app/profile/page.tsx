@@ -52,12 +52,15 @@ export default function ProfilePage() {
         <form onSubmit={handleSubmit} className="card-body gap-4">
           <div className="flex flex-col items-center gap-2">
             <div className="avatar">
-              <div className="w-24 rounded-full ring ring-primary ring-offset-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={user.image || "https://i.ibb.co/2kR5zq0/user.png"}
-                  alt={user.name}
-                />
+              <div className="w-24 rounded-full ring ring-primary ring-offset-2 bg-primary text-primary-content flex items-center justify-center">
+                {user.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={user.image} alt={user.name} />
+                ) : (
+                  <span className="text-4xl font-bold">
+                    {user.name?.charAt(0).toUpperCase()}
+                  </span>
+                )}
               </div>
             </div>
             <p className="font-semibold text-lg">{user.name}</p>
