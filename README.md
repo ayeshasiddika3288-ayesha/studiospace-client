@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StudioSpace
 
-## Getting Started
+Peer-to-peer creative workspace and production studio sharing platform where hosts list photo studios, podcast lounges, and music suites, and creators book them by the hour.
 
-First, run the development server:
+**Live site:** https://studiospace-client-navy.vercel.app
+**Server API:** https://studiospace-server-rosy.vercel.app
+**Server repository:** https://github.com/ayeshasiddika3288-ayesha/studiospace-server
+
+## Features
+
+- Browse, search, and filter studios by category, with sorting by rating
+- Hero slider, featured studios, and category shortcuts on the home page
+- Email/password and Google authentication with BetterAuth
+- Private routes to add, update, and delete studio listings (confirmation modal on delete)
+- Hourly booking system with live price calculation and a My Bookings page with cancel option
+- Double-booking prevention that checks overlap with confirmed bookings
+- JWT stored in HTTPOnly cookies; protected API routes return 401 when unauthorized
+- Host dashboard to confirm and complete booking requests
+- Light and dark theme toggle
+- Toast notifications, skeleton loaders, empty states, and a custom 404 page
+
+## Tech Stack
+
+- **Client:** Next.js (App Router), TypeScript, Tailwind CSS, DaisyUI, Swiper
+- **Authentication:** BetterAuth with MongoDB adapter, JWT
+- **Server:** Express.js, MongoDB (Atlas)
+- **Hosting:** Vercel
+
+## Local Setup
+
+1. Clone both repositories
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/ayeshasiddika3288-ayesha/studiospace-client.git
+git clone https://github.com/ayeshasiddika3288-ayesha/studiospace-server.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Server: create a `.env` file (see `.env.example`), then run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd studiospace-server
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Client: create a `.env.local` file
 
-## Learn More
+```
+MONGODB_URI=your_mongodb_connection_string
+BETTER_AUTH_SECRET=your_random_secret
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:5000
+JWT_SECRET=same_secret_as_server
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the client
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cd studiospace-client
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open http://localhost:3000
 
-## Deploy on Vercel
+## Examiner Test Credentials
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Host account:** Email: HOST_TEST_EMAIL | Password: HOST_TEST_PASSWORD
+- **Creator account:** Email: CREATOR_TEST_EMAIL | Password: CREATOR_TEST_PASSWORD
