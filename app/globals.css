@@ -1,2 +1,13 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+:root {
+  --swiper-theme-color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none;
+  }
+}

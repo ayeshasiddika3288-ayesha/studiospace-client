@@ -87,10 +87,10 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-base-100 shadow-sm">
-      <div className="navbar max-w-7xl mx-auto px-4">
-        <div className="navbar-start">
+      <div className="navbar max-w-7xl mx-auto px-2 sm:px-4">
+        <div className="navbar-start w-auto shrink-0 lg:w-1/2">
           <div className="dropdown lg:hidden">
-            <div tabIndex={0} role="button" className="btn btn-ghost">
+            <div tabIndex={0} role="button" className="btn btn-ghost btn-sm px-2">
               <FiMenu size={22} />
             </div>
             <ul
@@ -104,8 +104,11 @@ export default function Navbar() {
               ))}
             </ul>
           </div>
-          <Link href="/" className="flex items-center gap-2 text-2xl font-bold">
-            <FiAperture className="text-primary" size={28} />
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 whitespace-nowrap text-lg font-bold sm:text-2xl"
+          >
+            <FiAperture className="text-primary" size={24} />
             StudioSpace
           </Link>
         </div>
@@ -122,10 +125,10 @@ export default function Navbar() {
           </ul>
         </div>
 
-        <div className="navbar-end gap-2">
+        <div className="navbar-end w-auto flex-1 justify-end gap-1 sm:gap-2 lg:w-1/2 lg:flex-none">
           <button
             onClick={toggleTheme}
-            className="btn btn-ghost btn-circle"
+            className="btn btn-ghost btn-circle btn-sm sm:btn-md"
             aria-label="Toggle theme"
           >
             {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
@@ -175,10 +178,13 @@ export default function Navbar() {
             </div>
           ) : (
             <>
-              <Link href="/login" className="btn btn-outline btn-primary btn-sm">
+              <Link
+                href="/login"
+                className="btn btn-outline btn-primary btn-xs sm:btn-sm"
+              >
                 Login
               </Link>
-              <Link href="/register" className="btn btn-primary btn-sm">
+              <Link href="/register" className="btn btn-primary btn-xs sm:btn-sm">
                 Register
               </Link>
             </>
