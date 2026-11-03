@@ -15,6 +15,7 @@ const navLinks = [
 ];
 
 const userLinks = [
+  { label: "My Profile", href: "/profile" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Add New Studio", href: "/add-studio" },
   { label: "My Studio Listings", href: "/my-listings" },
@@ -151,7 +152,12 @@ export default function Navbar() {
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-10 mt-3 w-60 p-2 shadow"
               >
-                <li className="menu-title text-base">{user.name}</li>
+                <li className="menu-title text-base">
+                  {user.name}
+                  <span className="block text-xs font-normal normal-case opacity-70">
+                  {user.email}
+                  </span>
+                </li>
                 {userLinks.map((link) => (
                   <li key={link.href}>
                     <Link href={link.href}>{link.label}</Link>
