@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { FiAperture, FiMenu } from "react-icons/fi";
+import { FiAperture, FiMenu, FiMoon, FiSun } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
 
 const navLinks = [
@@ -25,8 +26,49 @@ export default function Navbar() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const current = document.documentElement.getAttribute("data-theme");
+    setTheme(current === "dark" ? "dark" : "light");
+  }, []);
+
+  // Give the Express server an HTTPOnly JWT cookie for the logged-in user
+  useEffect(() => {
+    if (!user?.email) return;
+    (async () => {
+      try {
+        const res = await fetch("/api/token");
+        if (!res.ok) return;
+        const { token } = await res.json();
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/jwt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ token }),
+        });
+      } catch {
+        // server cookie will be retried on next page load
+      }
+    })();
+  }, [user?.email]);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem("theme", next);
+    } catch {}
+    setTheme(next);
+  };
 
   const handleLogout = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {}
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
@@ -80,11 +122,23 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-end gap-2">
+          <button
+            onClick={toggleTheme}
+            className="btn btn-ghost btn-circle"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
+          </button>
+
           {isPending ? (
             <span className="loading loading-spinner loading-sm"></span>
           ) : user ? (
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
                 <div className="w-10 rounded-full ring ring-primary ring-offset-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
