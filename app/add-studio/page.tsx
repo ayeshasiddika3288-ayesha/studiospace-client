@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
-
-const categories = ["Photo Studio", "Film Stage", "Podcast Lounge", "Music Suite", "Workshop"];
-const amenityOptions = [
-  "WiFi", "Air Conditioning", "Soundproofing", "Lighting Kit",
-  "Green Screen", "Parking", "Makeup Room", "Backdrops",
-];
+import { categories, amenityOptions } from "@/lib/constants";
 
 export default function AddStudioPage() {
   const router = useRouter();
@@ -35,6 +30,11 @@ export default function AddStudioPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
 
+    const gallery = String(fd.get("gallery") || "")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     const studio = {
       title: fd.get("title"),
       category: fd.get("category"),
@@ -43,6 +43,7 @@ export default function AddStudioPage() {
       maxCapacity: Number(fd.get("maxCapacity")),
       location: fd.get("location"),
       image: fd.get("image"),
+      gallery,
       amenities: fd.getAll("amenities"),
       overview: fd.get("overview"),
       ownerName: user.name,
@@ -108,7 +109,12 @@ export default function AddStudioPage() {
 
         <label className="form-control">
           <span className="label-text mb-1">Image URL</span>
-          <input name="image" type="url" required placeholder="https://images.unsplash.com/photo-1783067091773-fc175ae0dbfb?w=800&auto=format&fit=crop&q=70" className="input input-bordered w-full" />
+          <input name="image" type="url" required placeholder="https://..." className="input input-bordered w-full" />
+        </label>
+
+        <label className="form-control sm:col-span-2">
+          <span className="label-text mb-1">Extra Gallery Images (optional, one URL per line)</span>
+          <textarea name="gallery" rows={3} placeholder="https://...&#10;https://..." className="textarea textarea-bordered w-full" />
         </label>
 
         <div className="sm:col-span-2">

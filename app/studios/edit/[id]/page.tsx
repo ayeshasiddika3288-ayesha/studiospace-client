@@ -7,7 +7,6 @@ import { authClient } from "@/lib/auth-client";
 import { categories, amenityOptions } from "@/lib/constants";
 import type { Studio } from "@/lib/types";
 
-
 export default function EditStudioPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -57,6 +56,11 @@ export default function EditStudioPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
 
+    const gallery = String(fd.get("gallery") || "")
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     const updated = {
       title: fd.get("title"),
       category: fd.get("category"),
@@ -65,6 +69,7 @@ export default function EditStudioPage() {
       maxCapacity: Number(fd.get("maxCapacity")),
       location: fd.get("location"),
       image: fd.get("image"),
+      gallery,
       amenities: fd.getAll("amenities"),
       overview: fd.get("overview"),
     };
@@ -128,6 +133,16 @@ export default function EditStudioPage() {
         <label className="form-control">
           <span className="label-text mb-1">Image URL</span>
           <input name="image" type="url" required defaultValue={studio.image} className="input input-bordered w-full" />
+        </label>
+
+        <label className="form-control sm:col-span-2">
+          <span className="label-text mb-1">Extra Gallery Images (optional, one URL per line)</span>
+          <textarea
+            name="gallery"
+            rows={3}
+            defaultValue={(studio.gallery ?? []).join("\n")}
+            className="textarea textarea-bordered w-full"
+          />
         </label>
 
         <div className="sm:col-span-2">
