@@ -7,6 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import { categories, amenityOptions } from "@/lib/constants";
 import type { Studio } from "@/lib/types";
 
+
 export default function EditStudioPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();

@@ -108,7 +108,7 @@ export default function AddStudioPage() {
 
         <label className="form-control">
           <span className="label-text mb-1">Image URL</span>
-          <input name="image" type="url" required placeholder="https://..." className="input input-bordered w-full" />
+          <input name="image" type="url" required placeholder="https://images.unsplash.com/photo-1783067091773-fc175ae0dbfb?w=800&auto=format&fit=crop&q=70" className="input input-bordered w-full" />
         </label>
 
         <div className="sm:col-span-2">
