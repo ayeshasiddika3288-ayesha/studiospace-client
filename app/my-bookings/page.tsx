@@ -128,9 +128,9 @@ export default function MyBookingsPage() {
                   </td>
                   <td>{b.date}</td>
                   <td>
-                    {b.startTime} - {b.endTime} ({b.hours} hr)
+                  {b.startTime} - {b.endTime} ({parseFloat(Number(b.hours).toFixed(2))} hr)
                   </td>
-                  <td>${b.totalPrice}</td>
+                  <td>${Number(b.totalPrice).toFixed(2)}</td>
                   <td>
                     <span className={`badge ${badgeClass[b.status]}`}>{b.status}</span>
                   </td>

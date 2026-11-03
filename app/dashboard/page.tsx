@@ -144,7 +144,7 @@ export default function DashboardPage() {
                       {b.startTime} - {b.endTime}
                     </span>
                   </td>
-                  <td>${b.totalPrice}</td>
+                  <td>${Number(b.totalPrice).toFixed(2)}</td>
                   <td>
                     <span className={`badge ${badgeClass[b.status]}`}>{b.status}</span>
                   </td>

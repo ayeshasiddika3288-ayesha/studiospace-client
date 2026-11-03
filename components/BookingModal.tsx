@@ -24,11 +24,11 @@ export default function BookingModal({ studio }: { studio: Studio }) {
   const [formError, setFormError] = useState("");
 
   const today = new Date().toLocaleDateString("en-CA");
-  const hours =
+    const hours =
     startTime && endTime && endTime > startTime
-      ? (toMinutes(endTime) - toMinutes(startTime)) / 60
+      ? Math.round(((toMinutes(endTime) - toMinutes(startTime)) / 60) * 100) / 100
       : 0;
-  const total = hours * studio.hourlyRate;
+  const total = Math.round(hours * studio.hourlyRate * 100) / 100;
 
   const handleOpen = () => {
     if (!user) {
