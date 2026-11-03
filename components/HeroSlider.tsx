@@ -10,19 +10,19 @@ import "swiper/css/navigation";
 const slides = [
   {
     image:
-      "https://plus.unsplash.com/premium_photo-1682097066897-209d0d9e9ae5?w=1600&auto=format&fit=crop&q=80",
+      "https://media.istockphoto.com/id/1494642262/photo/people-in-the-cinema-auditorium-with-empty-white-screen.webp?a=1&b=1&s=612x612&w=0&k=20&c=Q9NOP_pk04R_EVWtlVBZI75eSrXwYY_oz0wuk04rO7M=",
     title: "Find the Perfect Studio for Your Next Shoot",
     text: "Photo cyc walls, cinema stages, and creative spaces ready by the hour.",
   },
   {
     image:
-      "https://images.unsplash.com/photo-1664817550969-5e76adc4a3fe?w=1600&auto=format&fit=crop&q=80",
+      "https://media.istockphoto.com/id/1132835815/photo/podcast-studio.webp?a=1&b=1&s=612x612&w=0&k=20&c=6lmz2CnxdTUfEIyKQl09SMDZ9uOJaxawOqdSyFyl6eo=",
     title: "Record Your Podcast in a Pro-Grade Lounge",
     text: "Acoustic-treated rooms with mics, lighting, and comfortable seating.",
   },
   {
     image:
-      "https://images.unsplash.com/photo-1782274265689-4f10a91d4abb?w=1600&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1664817550969-5e76adc4a3fe?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
     title: "Turn Your Spare Space Into Income",
     text: "List your studio, set your hourly rate, and welcome creators near you.",
   },
