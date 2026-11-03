@@ -67,6 +67,7 @@ Open http://localhost:3000
 
 ## Examiner Test Credentials
 
-- **Host account:** Email: HOST_TEST_EMAIL | Password: HOST_TEST_PASSWORD
-- **Creator account:** Email: CREATOR_TEST_EMAIL | Password: CREATOR_TEST_PASSWORD
-- > Note: please test in a normal browser window (not Incognito). Incognito blocks the cross-site HTTPOnly JWT cookie, so create/update/delete actions will be rejected with 401.
+- **Host account:** Email: host@studiospace.test | Password: Host123
+- **Creator account:** Email: creator@studiospace.test | Password: Creator123
+
+> Note: please test in a normal browser window (not Incognito). Incognito blocks the cross-site HTTPOnly JWT cookie, so create, update, and delete actions will be rejected with 401.
