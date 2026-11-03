@@ -7,6 +7,7 @@ export type Studio = {
   maxCapacity: number;
   location: string;
   image: string;
+  gallery?: string[];
   amenities: string[];
   overview: string;
   ownerEmail: string;
