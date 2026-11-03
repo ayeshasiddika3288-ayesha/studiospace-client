@@ -69,3 +69,4 @@ Open http://localhost:3000
 
 - **Host account:** Email: HOST_TEST_EMAIL | Password: HOST_TEST_PASSWORD
 - **Creator account:** Email: CREATOR_TEST_EMAIL | Password: CREATOR_TEST_PASSWORD
+- > Note: please test in a normal browser window (not Incognito). Incognito blocks the cross-site HTTPOnly JWT cookie, so create/update/delete actions will be rejected with 401.
