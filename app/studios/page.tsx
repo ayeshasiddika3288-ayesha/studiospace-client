@@ -6,16 +6,19 @@ import type { Studio } from "@/lib/types";
 type SearchParams = { category?: string; search?: string; sort?: string };
 
 async function getStudios(query: URLSearchParams): Promise<Studio[]> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/studios?${query.toString()}`,
-      { cache: "no-store" }
-    );
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/studios?${query.toString()}`,
+        { cache: "no-store" }
+      );
+      if (res.ok) return res.json();
+    } catch {
+      // try again below
+    }
+    await new Promise((resolve) => setTimeout(resolve, 800));
   }
+  return [];
 }
 
 export default async function StudiosPage({

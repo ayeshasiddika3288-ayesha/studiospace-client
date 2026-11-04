@@ -9,16 +9,19 @@ import StudioCard from "@/components/StudioCard";
 import type { Studio } from "@/lib/types";
 
 async function getFeaturedStudios(): Promise<Studio[]> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/studios?limit=6`,
-      { cache: "no-store" }
-    );
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/studios?limit=6`,
+        { cache: "no-store" }
+      );
+      if (res.ok) return res.json();
+    } catch {
+      // try again below
+    }
+    await new Promise((resolve) => setTimeout(resolve, 800));
   }
+  return [];
 }
 
 const categories = [
