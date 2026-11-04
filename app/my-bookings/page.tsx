@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import { API_URL, ensureServerSession } from "@/lib/api";
 
 type Booking = {
   _id: string;
@@ -43,21 +44,30 @@ export default function MyBookingsPage() {
 
   useEffect(() => {
     if (!user?.email) return;
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/bookings?userEmail=${encodeURIComponent(user.email)}`
-    )
-      .then((res) => res.json())
-      .then((data) => setBookings(data))
-      .catch(() => toast.error("Could not load your bookings"))
-      .finally(() => setLoading(false));
+    (async () => {
+      try {
+        await ensureServerSession();
+        const res = await fetch(
+          `${API_URL}/api/bookings?userEmail=${encodeURIComponent(user.email)}`,
+          { credentials: "include" }
+        );
+        if (!res.ok) throw new Error();
+        setBookings(await res.json());
+      } catch {
+        toast.error("Could not load your bookings");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [user?.email]);
 
   const handleCancel = async () => {
     if (!cancelTarget) return;
     setCancelling(true);
     try {
+      await ensureServerSession();
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${cancelTarget._id}/cancel`,
+        `${API_URL}/api/bookings/${cancelTarget._id}/cancel`,
         { method: "PATCH", credentials: "include" }
       );
       const data = await res.json();
@@ -74,6 +84,32 @@ export default function MyBookingsPage() {
     } finally {
       setCancelling(false);
     }
+  };
+
+  const downloadInvoice = async (b: Booking) => {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF();
+    doc.setFontSize(22);
+    doc.text("StudioSpace", 20, 25);
+    doc.setFontSize(12);
+    doc.text("Booking Invoice", 20, 34);
+    doc.line(20, 38, 190, 38);
+    const rows = [
+      ["Invoice #", b._id.slice(-8).toUpperCase()],
+      ["Guest", user?.name ?? ""],
+      ["Email", user?.email ?? ""],
+      ["Studio", b.studioTitle],
+      ["Date", b.date],
+      ["Time", `${b.startTime} - ${b.endTime} (${parseFloat(Number(b.hours).toFixed(2))} hr)`],
+      ["Status", b.status],
+      ["Total", `$${Number(b.totalPrice).toFixed(2)}`],
+    ];
+    rows.forEach(([label, value], i) => {
+      doc.text(`${label}:`, 20, 50 + i * 10);
+      doc.text(String(value), 70, 50 + i * 10);
+    });
+    doc.save(`invoice-${b._id.slice(-8)}.pdf`);
+    toast.success("Invoice downloaded");
   };
 
   if (isPending || !user || loading) {
@@ -134,7 +170,15 @@ export default function MyBookingsPage() {
                   <td>
                     <span className={`badge ${badgeClass[b.status]}`}>{b.status}</span>
                   </td>
-                  <td className="text-right">
+                  <td className="text-right space-x-2">
+                    {(b.status === "Confirmed" || b.status === "Completed") && (
+                      <button
+                        onClick={() => downloadInvoice(b)}
+                        className="btn btn-sm btn-outline btn-primary"
+                      >
+                        Download Invoice
+                      </button>
+                    )}
                     {b.status === "Pending" && (
                       <button
                         onClick={() => setCancelTarget(b)}

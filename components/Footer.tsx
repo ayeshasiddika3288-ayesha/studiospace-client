@@ -26,10 +26,10 @@ const categories = [
 ];
 
 const socials = [
-  { icon: FaXTwitter, label: "X" },
-  { icon: FaFacebookF, label: "Facebook" },
-  { icon: FaInstagram, label: "Instagram" },
-  { icon: FaLinkedinIn, label: "LinkedIn" },
+  { icon: FaXTwitter, label: "X", href: "https://x.com/yourhandle" },
+  { icon: FaFacebookF, label: "Facebook", href: "https://facebook.com/yourpage" },
+  { icon: FaInstagram, label: "Instagram", href: "https://instagram.com/yourhandle" },
+  { icon: FaLinkedinIn, label: "LinkedIn", href: "https://linkedin.com/in/yourname" },
 ];
 
 export default function Footer() {
@@ -52,10 +52,12 @@ export default function Footer() {
             Discover, book, and shoot in studios built for your craft.
           </p>
           <div className="flex gap-3 mt-5">
-            {socials.map(({ icon: Icon, label }) => (
+            {socials.map(({ icon: Icon, label, href }) => (
               <a
                 key={label}
-                href="#"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="btn btn-circle btn-sm btn-outline"
               >

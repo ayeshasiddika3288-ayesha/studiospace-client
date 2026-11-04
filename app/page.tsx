@@ -7,12 +7,13 @@ import {
 import HeroSlider from "@/components/HeroSlider";
 import StudioCard from "@/components/StudioCard";
 import type { Studio } from "@/lib/types";
+import { API_URL } from "@/lib/api";
 
 async function getFeaturedStudios(): Promise<Studio[]> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/studios?limit=6`,
+        `${API_URL}/api/studios?limit=6`,
         { cache: "no-store" }
       );
       if (res.ok) return res.json();

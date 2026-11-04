@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import type { Studio } from "@/lib/types";
+import { API_URL, ensureServerSession } from "@/lib/api";
 
 export default function MyListingsPage() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function MyListingsPage() {
   useEffect(() => {
     if (!user?.email) return;
     fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/studios?ownerEmail=${encodeURIComponent(user.email)}`
+      `${API_URL}/api/studios?ownerEmail=${encodeURIComponent(user.email)}`
     )
       .then((res) => res.json())
       .then((data) => setStudios(data))
@@ -37,8 +38,9 @@ export default function MyListingsPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
+      await ensureServerSession();
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/studios/${deleteTarget._id}`,
+        `${API_URL}/api/studios/${deleteTarget._id}`,
         { method: "DELETE", credentials: "include" }
       );
       if (!res.ok) throw new Error();

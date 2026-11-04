@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import { API_URL, ensureServerSession } from "@/lib/api";
 
 type Booking = {
   _id: string;
@@ -42,20 +43,29 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!user?.email) return;
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/bookings?hostEmail=${encodeURIComponent(user.email)}`
-    )
-      .then((res) => res.json())
-      .then((data) => setBookings(data))
-      .catch(() => toast.error("Could not load booking requests"))
-      .finally(() => setLoading(false));
+    (async () => {
+      try {
+        await ensureServerSession();
+        const res = await fetch(
+          `${API_URL}/api/bookings?hostEmail=${encodeURIComponent(user.email)}`,
+          { credentials: "include" }
+        );
+        if (!res.ok) throw new Error();
+        setBookings(await res.json());
+      } catch {
+        toast.error("Could not load booking requests");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [user?.email]);
 
   const updateStatus = async (id: string, status: "Confirmed" | "Completed") => {
     setUpdatingId(id);
     try {
+      await ensureServerSession();
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${id}/status`,
+        `${API_URL}/api/bookings/${id}/status`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FiAperture, FiMenu, FiMoon, FiSun } from "react-icons/fi";
 import { authClient } from "@/lib/auth-client";
+import { API_URL, ensureServerSession, resetServerSession } from "@/lib/api";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -37,21 +38,7 @@ export default function Navbar() {
   // Give the Express server an HTTPOnly JWT cookie for the logged-in user
   useEffect(() => {
     if (!user?.email) return;
-    (async () => {
-      try {
-        const res = await fetch("/api/token");
-        if (!res.ok) return;
-        const { token } = await res.json();
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/jwt`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ token }),
-        });
-      } catch {
-        // server cookie will be retried on next page load
-      }
-    })();
+    ensureServerSession();
   }, [user?.email]);
 
   const toggleTheme = () => {
@@ -64,8 +51,9 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
+    resetServerSession();
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logout`, {
+      await fetch(`${API_URL}/api/logout`, {
         method: "POST",
         credentials: "include",
       });

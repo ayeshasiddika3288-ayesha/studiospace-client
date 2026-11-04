@@ -4,10 +4,11 @@ import { FiMapPin, FiUsers, FiShield, FiCheck } from "react-icons/fi";
 import BookingModal from "@/components/BookingModal";
 import StudioGallery from "@/components/StudioGallery";
 import type { Studio } from "@/lib/types";
+import { API_URL } from "@/lib/api";
 
 async function getStudio(id: string): Promise<Studio | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/studios/${id}`, {
+    const res = await fetch(`${API_URL}/api/studios/${id}`, {
       cache: "no-store",
     });
     if (!res.ok) return null;

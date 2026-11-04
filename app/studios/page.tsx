@@ -2,6 +2,7 @@ import Link from "next/link";
 import StudioCard from "@/components/StudioCard";
 import { categories } from "@/lib/constants";
 import type { Studio } from "@/lib/types";
+import { API_URL } from "@/lib/api";
 
 type SearchParams = { category?: string; search?: string; sort?: string };
 
@@ -9,7 +10,7 @@ async function getStudios(query: URLSearchParams): Promise<Studio[]> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/studios?${query.toString()}`,
+        `${API_URL}/api/studios?${query.toString()}`,
         { cache: "no-store" }
       );
       if (res.ok) return res.json();

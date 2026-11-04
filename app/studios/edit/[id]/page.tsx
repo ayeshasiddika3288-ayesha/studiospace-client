@@ -6,6 +6,8 @@ import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { categories, amenityOptions } from "@/lib/constants";
 import type { Studio } from "@/lib/types";
+import { API_URL, ensureServerSession } from "@/lib/api";
+import { uploadToImgbb } from "@/lib/imgbb";
 
 export default function EditStudioPage() {
   const router = useRouter();
@@ -24,7 +26,7 @@ export default function EditStudioPage() {
 
   useEffect(() => {
     if (!user) return;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/studios/${id}`)
+    fetch(`${API_URL}/api/studios/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
@@ -56,27 +58,41 @@ export default function EditStudioPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
 
-    const gallery = String(fd.get("gallery") || "")
-      .split("\n")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const updated = {
-      title: fd.get("title"),
-      category: fd.get("category"),
-      hourlyRate: Number(fd.get("hourlyRate")),
-      securityDeposit: Number(fd.get("securityDeposit")),
-      maxCapacity: Number(fd.get("maxCapacity")),
-      location: fd.get("location"),
-      image: fd.get("image"),
-      gallery,
-      amenities: fd.getAll("amenities"),
-      overview: fd.get("overview"),
-    };
-
     setSaving(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/studios/${id}`, {
+      // Cover image: keep the current one unless a new file is chosen
+      const coverFile = fd.get("imageFile") as File;
+      const image =
+        coverFile && coverFile.size > 0
+          ? await uploadToImgbb(coverFile)
+          : studio.image;
+
+      // Gallery: URLs left in the textarea + any newly uploaded files
+      const keptGallery = String(fd.get("gallery") || "")
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const newFiles = (fd.getAll("galleryFiles") as File[]).filter(
+        (f) => f.size > 0
+      );
+      const uploaded = await Promise.all(newFiles.map(uploadToImgbb));
+      const gallery = [...keptGallery, ...uploaded];
+
+      const updated = {
+        title: fd.get("title"),
+        category: fd.get("category"),
+        hourlyRate: Number(fd.get("hourlyRate")),
+        securityDeposit: Number(fd.get("securityDeposit")),
+        maxCapacity: Number(fd.get("maxCapacity")),
+        location: fd.get("location"),
+        image,
+        gallery,
+        amenities: fd.getAll("amenities"),
+        overview: fd.get("overview"),
+      };
+
+      await ensureServerSession();
+      const res = await fetch(`${API_URL}/api/studios/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -85,8 +101,12 @@ export default function EditStudioPage() {
       if (!res.ok) throw new Error();
       toast.success("Studio updated successfully!");
       router.push("/my-listings");
-    } catch {
-      toast.error("Could not update the studio. Please try again.");
+    } catch (err) {
+      toast.error(
+        err instanceof Error && err.message.includes("image")
+          ? err.message
+          : "Could not update the studio. Please try again."
+      );
     } finally {
       setSaving(false);
     }
@@ -131,18 +151,23 @@ export default function EditStudioPage() {
         </label>
 
         <label className="form-control">
-          <span className="label-text mb-1">Image URL</span>
-          <input name="image" type="url" required defaultValue={studio.image} className="input input-bordered w-full" />
+          <span className="label-text mb-1">Cover Image (leave empty to keep the current one)</span>
+          <input name="imageFile" type="file" accept="image/*" className="file-input file-input-bordered w-full" />
         </label>
 
         <label className="form-control sm:col-span-2">
-          <span className="label-text mb-1">Extra Gallery Images (optional, one URL per line)</span>
+          <span className="label-text mb-1">Current gallery images (one URL per line, delete a line to remove it)</span>
           <textarea
             name="gallery"
             rows={3}
             defaultValue={(studio.gallery ?? []).join("\n")}
             className="textarea textarea-bordered w-full"
           />
+        </label>
+
+        <label className="form-control sm:col-span-2">
+          <span className="label-text mb-1">Add more gallery images (optional, select multiple)</span>
+          <input name="galleryFiles" type="file" accept="image/*" multiple className="file-input file-input-bordered w-full" />
         </label>
 
         <div className="sm:col-span-2">

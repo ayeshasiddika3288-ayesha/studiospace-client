@@ -16,6 +16,8 @@ Peer-to-peer creative workspace and production studio sharing platform where hos
 - Double-booking prevention that checks overlap with confirmed bookings
 - JWT stored in HTTPOnly cookies; protected API routes return 401 when unauthorized
 - Host dashboard to confirm and complete booking requests
+- Image uploads to imgbb for the cover image and gallery carousel
+- Downloadable PDF invoice for confirmed and completed bookings
 - Light and dark theme toggle
 - Toast notifications, skeleton loaders, empty states, and a custom 404 page
 
@@ -51,6 +53,7 @@ BETTER_AUTH_SECRET=your_random_secret
 BETTER_AUTH_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:5000
 JWT_SECRET=same_secret_as_server
+NEXT_PUBLIC_IMGBB_KEY=your_imgbb_api_key
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```

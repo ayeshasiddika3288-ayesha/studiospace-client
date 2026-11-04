@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { categories, amenityOptions } from "@/lib/constants";
+import { API_URL, ensureServerSession } from "@/lib/api";
+import { uploadToImgbb } from "@/lib/imgbb";
 
 export default function AddStudioPage() {
   const router = useRouter();
@@ -30,29 +32,31 @@ export default function AddStudioPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
 
-    const gallery = String(fd.get("gallery") || "")
-      .split("\n")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const studio = {
-      title: fd.get("title"),
-      category: fd.get("category"),
-      hourlyRate: Number(fd.get("hourlyRate")),
-      securityDeposit: Number(fd.get("securityDeposit")),
-      maxCapacity: Number(fd.get("maxCapacity")),
-      location: fd.get("location"),
-      image: fd.get("image"),
-      gallery,
-      amenities: fd.getAll("amenities"),
-      overview: fd.get("overview"),
-      ownerName: user.name,
-      ownerEmail: user.email,
-    };
-
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/studios`, {
+      const image = await uploadToImgbb(fd.get("imageFile") as File);
+      const galleryFiles = (fd.getAll("galleryFiles") as File[]).filter(
+        (f) => f.size > 0
+      );
+      const gallery = await Promise.all(galleryFiles.map(uploadToImgbb));
+
+      const studio = {
+        title: fd.get("title"),
+        category: fd.get("category"),
+        hourlyRate: Number(fd.get("hourlyRate")),
+        securityDeposit: Number(fd.get("securityDeposit")),
+        maxCapacity: Number(fd.get("maxCapacity")),
+        location: fd.get("location"),
+        image,
+        gallery,
+        amenities: fd.getAll("amenities"),
+        overview: fd.get("overview"),
+        ownerName: user.name,
+        ownerEmail: user.email,
+      };
+
+      await ensureServerSession();
+      const res = await fetch(`${API_URL}/api/studios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -61,8 +65,12 @@ export default function AddStudioPage() {
       if (!res.ok) throw new Error("Failed to add studio");
       toast.success("Studio listed successfully!");
       router.push("/my-listings");
-    } catch {
-      toast.error("Could not add the studio. Please try again.");
+    } catch (err) {
+      toast.error(
+        err instanceof Error && err.message.includes("image")
+          ? err.message
+          : "Could not add the studio. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -108,13 +116,13 @@ export default function AddStudioPage() {
         </label>
 
         <label className="form-control">
-          <span className="label-text mb-1">Image URL</span>
-          <input name="image" type="url" required placeholder="https://..." className="input input-bordered w-full" />
+          <span className="label-text mb-1">Cover Image</span>
+          <input name="imageFile" type="file" accept="image/*" required className="file-input file-input-bordered w-full" />
         </label>
 
         <label className="form-control sm:col-span-2">
-          <span className="label-text mb-1">Extra Gallery Images (optional, one URL per line)</span>
-          <textarea name="gallery" rows={3} placeholder="https://...&#10;https://..." className="textarea textarea-bordered w-full" />
+          <span className="label-text mb-1">Extra Gallery Images (optional, select multiple)</span>
+          <input name="galleryFiles" type="file" accept="image/*" multiple className="file-input file-input-bordered w-full" />
         </label>
 
         <div className="sm:col-span-2">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import type { Studio } from "@/lib/types";
+import { API_URL, ensureServerSession } from "@/lib/api";
 
 const toMinutes = (t: string) => {
   const [h, m] = t.split(":").map(Number);
@@ -50,7 +51,8 @@ export default function BookingModal({ studio }: { studio: Studio }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
+      await ensureServerSession();
+      const res = await fetch(`${API_URL}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
