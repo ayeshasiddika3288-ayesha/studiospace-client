@@ -1,6 +1,8 @@
+
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
@@ -25,10 +27,14 @@ export default function BookingModal({ studio }: { studio: Studio }) {
   const [formError, setFormError] = useState("");
 
   const today = new Date().toLocaleDateString("en-CA");
-    const hours =
+
+  const hours =
     startTime && endTime && endTime > startTime
-      ? Math.round(((toMinutes(endTime) - toMinutes(startTime)) / 60) * 100) / 100
+      ? Math.round(
+          ((toMinutes(endTime) - toMinutes(startTime)) / 60) * 100
+        ) / 100
       : 0;
+
   const total = Math.round(hours * studio.hourlyRate * 100) / 100;
 
   const handleOpen = () => {
@@ -37,6 +43,7 @@ export default function BookingModal({ studio }: { studio: Studio }) {
       router.push(`/login?redirect=/studios/${studio._id}`);
       return;
     }
+
     setOpen(true);
   };
 
@@ -50,8 +57,10 @@ export default function BookingModal({ studio }: { studio: Studio }) {
     }
 
     setLoading(true);
+
     try {
       await ensureServerSession();
+
       const res = await fetch(`${API_URL}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -65,12 +74,15 @@ export default function BookingModal({ studio }: { studio: Studio }) {
           userName: user?.name,
         }),
       });
+
       const data = await res.json();
+
       if (!res.ok) {
         setFormError(data.message || "Booking failed");
         toast.error(data.message || "Booking failed");
         return;
       }
+
       toast.success("Booking request sent! Status: Pending");
       setOpen(false);
       router.push("/my-bookings");
@@ -87,80 +99,109 @@ export default function BookingModal({ studio }: { studio: Studio }) {
         Book Workspace Now
       </button>
 
-      <div className={`modal ${open ? "modal-open" : ""}`}>
-        <div className="modal-box">
-          <h3 className="font-bold text-xl">Book {studio.title}</h3>
-          <form onSubmit={handleSubmit} className="mt-4 space-y-3">
-            <label className="form-control">
-              <span className="label-text mb-1">Date</span>
-              <input
-                type="date"
-                min={today}
-                required
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="input input-bordered w-full"
-              />
-            </label>
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4"
+            onClick={(e) => {
+              if (e.target === e.currentTarget && !loading) {
+                setOpen(false);
+              }
+            }}
+          >
+            <div className="relative z-[10000] max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-base-100 p-6 shadow-2xl">
+              <h3 className="text-xl font-bold">
+                Book {studio.title}
+              </h3>
 
-            <div className="grid grid-cols-2 gap-3">
-              <label className="form-control">
-                <span className="label-text mb-1">Start time</span>
-                <input
-                  type="time"
-                  required
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text mb-1">End time</span>
-                <input
-                  type="time"
-                  required
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="input input-bordered w-full"
-                />
-              </label>
-            </div>
+              <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+                <label className="form-control">
+                  <span className="label-text mb-1">Date</span>
+                  <input
+                    type="date"
+                    min={today}
+                    required
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="input input-bordered w-full"
+                  />
+                </label>
 
-            <div className="rounded-box bg-base-200 p-3 text-sm space-y-1">
-              <p>
-                Duration: <span className="font-semibold">{hours} hr</span>
-              </p>
-              <p>
-                Total price:{" "}
-                <span className="font-semibold text-primary">${total}</span>
-              </p>
-              <p className="opacity-70">
-                Refundable security deposit: ${studio.securityDeposit}
-              </p>
-            </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className="form-control">
+                    <span className="label-text mb-1">Start time</span>
+                    <input
+                      type="time"
+                      required
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      className="input input-bordered w-full"
+                    />
+                  </label>
 
-            {formError && <p className="text-error text-sm">{formError}</p>}
+                  <label className="form-control">
+                    <span className="label-text mb-1">End time</span>
+                    <input
+                      type="time"
+                      required
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      className="input input-bordered w-full"
+                    />
+                  </label>
+                </div>
 
-            <div className="modal-action">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => setOpen(false)}
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? (
-                  <span className="loading loading-spinner"></span>
-                ) : (
-                  "Confirm Booking"
+                <div className="rounded-box bg-base-200 p-3 text-sm space-y-1">
+                  <p>
+                    Duration:{" "}
+                    <span className="font-semibold">{hours} hr</span>
+                  </p>
+
+                  <p>
+                    Total price:{" "}
+                    <span className="font-semibold text-primary">
+                      ${total}
+                    </span>
+                  </p>
+
+                  <p className="opacity-70">
+                    Refundable security deposit: $
+                    {studio.securityDeposit}
+                  </p>
+                </div>
+
+                {formError && (
+                  <p className="text-error text-sm">{formError}</p>
                 )}
-              </button>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => setOpen(false)}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <span className="loading loading-spinner"></span>
+                    ) : (
+                      "Confirm Booking"
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
-      </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }
