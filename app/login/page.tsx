@@ -16,9 +16,14 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const rememberMe = formData.get("remember") === "on";
 
     setLoading(true);
-    const { error } = await authClient.signIn.email({ email, password });
+    const { error } = await authClient.signIn.email({
+      email,
+      password,
+      rememberMe,
+    });
     setLoading(false);
 
     if (error) {
@@ -54,13 +59,24 @@ export default function LoginPage() {
             <input name="password" type="password" required placeholder="Your password" className="input input-bordered w-full" />
           </label>
 
-          <button
-            type="button"
-            onClick={() => toast("Password reset is coming soon")}
-            className="link link-hover text-sm text-right"
-          >
-            Forgot Password?
-          </button>
+          <div className="flex items-center justify-between">
+            <label className="label cursor-pointer justify-start gap-2 p-0">
+              <input
+                type="checkbox"
+                name="remember"
+                defaultChecked
+                className="checkbox checkbox-primary checkbox-sm"
+              />
+              <span className="label-text">Remember me</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => toast("Password reset is coming soon")}
+              className="link link-hover text-sm"
+            >
+              Forgot Password?
+            </button>
+          </div>
 
           <button type="submit" disabled={loading} className="btn btn-primary">
             {loading ? <span className="loading loading-spinner"></span> : "Login"}
