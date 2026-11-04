@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import { FaStar } from "react-icons/fa";
 import { FiMapPin, FiUsers, FiShield, FiCheck } from "react-icons/fi";
@@ -11,7 +12,9 @@ async function getStudio(id: string): Promise<Studio | null> {
     const res = await fetch(`${API_URL}/api/studios/${id}`, {
       cache: "no-store",
     });
+
     if (!res.ok) return null;
+
     return res.json();
   } catch {
     return null;
@@ -25,6 +28,7 @@ export default async function StudioDetailsPage({
 }) {
   const { id } = await params;
   const studio = await getStudio(id);
+
   if (!studio) notFound();
 
   const images = [studio.image, ...(studio.gallery ?? [])].filter(Boolean);
@@ -35,16 +39,24 @@ export default async function StudioDetailsPage({
         <StudioGallery images={images} title={studio.title} />
 
         <div>
-          <span className="badge badge-primary mb-2">{studio.category}</span>
+          <span className="badge badge-primary mb-2">
+            {studio.category}
+          </span>
+
           <h1 className="text-3xl font-bold">{studio.title}</h1>
+
           <div className="flex flex-wrap items-center gap-4 mt-2 text-sm opacity-80">
             <span className="flex items-center gap-1">
               <FiMapPin /> {studio.location}
             </span>
+
             <span className="flex items-center gap-1">
               <FaStar className="text-yellow-400" />
-              {studio.rating ? studio.rating.toFixed(1) : "New"}
+              {typeof studio.rating === "number" && studio.rating > 0
+                ? studio.rating.toFixed(1)
+                : "No ratings yet"}
             </span>
+
             <span className="flex items-center gap-1">
               <FiUsers /> Up to {studio.maxCapacity} people
             </span>
@@ -53,11 +65,14 @@ export default async function StudioDetailsPage({
 
         <section>
           <h2 className="text-xl font-semibold mb-2">Overview</h2>
-          <p className="opacity-80 leading-relaxed">{studio.overview}</p>
+          <p className="opacity-80 leading-relaxed">
+            {studio.overview}
+          </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-3">Amenities</h2>
+
           {studio.amenities?.length ? (
             <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {studio.amenities.map((a) => (
@@ -73,8 +88,9 @@ export default async function StudioDetailsPage({
 
         <section>
           <h2 className="text-xl font-semibold mb-2">Reviews</h2>
+
           <div className="rounded-box border border-base-200 p-6 text-center opacity-80">
-            No reviews yet. Be the first to book and share your experience.
+            No reviews yet.
           </div>
         </section>
       </div>
@@ -86,11 +102,13 @@ export default async function StudioDetailsPage({
               ${studio.hourlyRate}{" "}
               <span className="text-base font-normal">/ hr</span>
             </p>
+
             <p className="flex items-center gap-2 text-sm">
               <FiShield /> Security deposit: ${studio.securityDeposit}
             </p>
 
             <div className="divider my-1"></div>
+
             <div>
               <p className="text-sm opacity-70">Hosted by</p>
               <p className="font-semibold">{studio.ownerName}</p>
