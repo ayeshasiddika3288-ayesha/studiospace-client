@@ -87,8 +87,9 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-base-100 shadow-sm">
-      <div className="navbar max-w-7xl mx-auto px-2 sm:px-4">
-        <div className="navbar-start w-auto shrink-0 lg:w-1/2">
+      <div className="navbar max-w-7xl mx-auto gap-2 px-2 sm:px-4">
+        {/* Left: menu (mobile) + logo */}
+        <div className="flex flex-1 items-center gap-1 lg:flex-none">
           <div className="dropdown lg:hidden">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-sm px-2">
               <FiMenu size={22} />
@@ -113,7 +114,8 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <div className="navbar-center hidden lg:flex">
+        {/* Center: links (desktop) */}
+        <div className="hidden flex-1 justify-center lg:flex">
           <ul className="menu menu-horizontal gap-1">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -125,7 +127,8 @@ export default function Navbar() {
           </ul>
         </div>
 
-        <div className="navbar-end w-auto flex-1 justify-end gap-1 sm:gap-2 lg:w-1/2 lg:flex-none">
+        {/* Right: theme toggle + auth */}
+        <div className="flex items-center justify-end gap-1 sm:gap-2">
           <button
             onClick={toggleTheme}
             className="btn btn-ghost btn-circle btn-sm sm:btn-md"
